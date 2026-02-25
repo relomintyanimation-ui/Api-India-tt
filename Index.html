@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>B2K CHEATS - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h1>B2K<span>CHEATS</span></h1>
+            <div class="login-subtitle">Voice Enabled Multi UID Panel</div>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter Password">
+            <button class="login-btn" id="loginBtn">ACCESS PANEL</button>
+        </div>
+    </div>
+
+    <!-- Toast Container for Login Errors -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Simple Particle Script for Login Page
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = window.innerWidth < 500 ? 10 : 20;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                p.style.animationDuration = 10 + Math.random() * 10 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Login Logic
+        const PASSWORD = "1K";
+        
+        function showToast(message, type) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2500);
+            });
+        }
+
+        function handleLogin() {
+            const pwd = document.getElementById('passwordInput').value;
+            if (pwd === PASSWORD) {
+                // Correct Password -> Go to Dashboard
+                window.location.href = "dashboard.html"; 
+            } else {
+                showToast('Invalid Password!', 'error');
+                // Play error sound using simple oscillator
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    oscillator.frequency.setValueAtTime(200, audioCtx.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                } catch(e){}
+                
+                // Speak error
+                if('speechSynthesis' in window) {
+                    const u = new SpeechSynthesisUtterance("Invalid password");
+                    window.speechSynthesis.speak(u);
+                }
+            }
+        }
+
+        document.getElementById('loginBtn').addEventListener('click', handleLogin);
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+    </script>
+</body>
+</html>
